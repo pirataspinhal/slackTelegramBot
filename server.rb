@@ -4,17 +4,31 @@ server = TCPServer.new 25566
 
 loop do
 	client = server.accept
-	method, path = client.gets.split
-	headers = {}
-	while line = client.gets.split(' ', 2)
-		break if line[0] = ''
-		headers[line[0].chop] = line[1].strip
-	end
-	data = client.read(headers['Content-Length'].to_i)
+	header = client.recv(1024)
+	puts "got header:\n#{header.to_s}"
+	length = /Content-Length: (\d+)/.match.captures.first.to_i
+	puts "got len: #{length}"
+	data = client.recv(length.to_i)
 
-	puts "Method: #{method}\n path: #{path}"
-
+	puts data.inspect
 	puts data
 
-	puts headers.inspect
+	client.close
+
+=begin
+	client = server.accept
+	line = ''
+	while thisline = client.gets
+		line << thisline
+		line << '\n'
+	end
+	length = /Content-Length: (\d+)/.match(line)
+	next unless length
+	length = length.captures
+	puts length.inspect
+	length = length.first.to_i
+
+	data = client.read(length)
+	puts data.inspect
+=end
 end
