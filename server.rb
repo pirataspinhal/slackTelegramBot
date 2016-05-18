@@ -3,32 +3,28 @@ require 'socket'
 server = TCPServer.new 25566
 
 loop do
+
 	client = server.accept
-	header = client.recv(1024)
-	puts "got header:\n#{header.to_s}"
-	length = /Content-Length: (\d+)/.match(header).captures.first.to_i
-	puts "got len: #{length}"
-	data = client.recv(length.to_i)
 
-	puts data.inspect
-	puts data
-
-	client.close
-
-=begin
-	client = server.accept
-	line = ''
-	while thisline = client.gets
-		line << thisline
-		line << '\n'
+	data = ''
+	while text = client.gets
+		data << text
 	end
-	length = /Content-Length: (\d+)/.match(line)
-	next unless length
-	length = length.captures
-	puts length.inspect
-	length = length.first.to_i
 
-	data = client.read(length)
-	puts data.inspect
-=end
+	cap = /(token=.*)/.match(data).captures.first
+	cap = cap.split('&')
+	params = {}
+	cap.each do |entry|
+		entry.chomp!
+		e = entry.split('=')
+		params[e[0].to_sym] = e[1]
+	end
+
+	puts params.inspect
+
+	puts "#{params[:user_name]}: #{params[:text]}"
+
+
+	puts '---------------------------'
+
 end
