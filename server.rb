@@ -6,7 +6,7 @@ loop do
 	client = server.accept
 	header = client.recv(1024)
 	puts "got header:\n#{header.to_s}"
-	length = /Content-Length: (\d+)/.match.captures.first.to_i
+	length = /Content-Length: (\d+)/.match(header).captures.first.to_i
 	puts "got len: #{length}"
 	data = client.recv(length.to_i)
 
