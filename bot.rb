@@ -34,7 +34,7 @@ def start(port = CONST::Slack::Port)
 	Signal.trap('INT') { running = false }
 	while running
 		telegram_cycle bot
-		slack_cycle slack
+		slack_cycle slack, bot
 	end
 end
 

@@ -17,6 +17,7 @@ class SlackWebhookListener
 			hash_entry = arr_entry.split(hash_sep)
 			params[hash_entry.first.to_sym] = hash_entry.last
 		end
+		params
 	end
 
 	def listen_once(&block)
