@@ -1,38 +1,42 @@
 require 'socket'
 
-class Server
+class SlackWebhookListener
+
 	attr_accessor :server
+
 	def initialize(port)
-		puts 'initializing server'
 		self.server = TCPServer.new port
 	end
 
-	def listen(&block)
-		loop do
+	def get_params(data, arr_sep = '&', hash_sep = '=')
+		cap = /(token=.*)/.match(data).captures.first
+		cap = cap.split(arr_sep)
+		params = {}
+		cap.each do |arr_entry|
+			arr_entry.chomp!
+			hash_entry = arr_entry.split(hash_sep)
+			params[hash_entry.first.to_sym] = hash_entry.last
+		end
+	end
 
-			puts 'waiting for a connection...'
+	def listen_once(&block)
 			client = self.server.accept
-			puts 'got a request!'
 
 			data = ''
 			while text = client.gets
 				data << text
 			end
 
-			cap = /(token=.*)/.match(data).captures.first
-			cap = cap.split('&')
-			params = {}
-			cap.each do |entry|
-				entry.chomp!
-				e = entry.split('=')
-				params[e[0].to_sym] = e[1]
-			end
+			params = get_params(data)
 
-			puts "got message"
-			puts params.inspect
+			client.close
 
 			block.call(params)
+	end
 
+	def listen_loop(&block)
+		loop do
+			listen_once(block)
 		end
 	end
 end
