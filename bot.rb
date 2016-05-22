@@ -7,7 +7,7 @@ module CONST
 		Chat = 41487359;
 	end
 	module Slack
-		Port = 25566
+		Port = 25567
 	end
 end
 
@@ -18,9 +18,10 @@ def telegram_cycle(bot)
 	end
 end
 
-def slack_cycle(slack, bot)
-	slack.listen_once do |params|
+def slack_cycle(stack, bot)
+	unless stack.empty?
 		puts "got update from slack!"
+		params = stack.shift
 		bot.api.send_message(chat_id: CONST::Telegram::Chat, text: "#{params[:user_name]}: #{params[:text]}")
 	end
 end
@@ -32,9 +33,15 @@ def start(port = CONST::Slack::Port)
 
 	running = true
 	Signal.trap('INT') { running = false }
+
+	stack = []
+	slack.listen_loop_nonblock(stack)
+
 	while running
+		puts 'running telegram cycle'
 		telegram_cycle bot
-		slack_cycle slack, bot
+		puts 'running slack cycle'
+		slack_cycle stack, bot
 	end
 end
 

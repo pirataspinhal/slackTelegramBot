@@ -1,4 +1,5 @@
 require 'socket'
+require 'timeout'
 
 class SlackWebhookListener
 
@@ -20,19 +21,32 @@ class SlackWebhookListener
 		params
 	end
 
-	def listen_once(&block)
-			client = self.server.accept
-
-			data = ''
-			while text = client.gets
-				data << text
+	['_loop', '_once'].each do |lop|
+		method_name = "listen#{lop}"
+		define_method("#{method_name}_nonblock") do |stack|
+			Thread.start do
+				self.call(method_name) do |params|
+					stack.push params
+					yield params if block_given?
+				end
 			end
+		end
+	end
 
-			params = get_params(data)
+	def listen_once(&block)
 
-			client.close
+		client = self.server.accept
 
-			block.call(params)
+		data = ''
+		while text = client.gets
+			data << text
+		end
+
+		params = get_params(data)
+
+		client.close
+
+		block.call(params)
 	end
 
 	def listen_loop(&block)
