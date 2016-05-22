@@ -4,7 +4,6 @@ require File.expand_path './telegram'
 module CONST
 	module Telegram
 		Token = ENV['bot_token']
-		Chat = 41487359;
 		Registry_File = File.expand_path './registry.yml'
 	end
 	module Slack
@@ -23,9 +22,7 @@ def start(port = CONST::Slack::Port)
 	slack.start_listening
 
 	while running
-		puts 'running telegram cycle'
 		telegram.cycle
-		puts 'running slack cycle'
 		slack.cycle do |params|
 			telegram.handle_slack_params params
 		end
