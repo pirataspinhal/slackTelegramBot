@@ -25,7 +25,7 @@ class SlackWebhookListener
 		method_name = "listen#{lop}"
 		define_method("#{method_name}_nonblock") do |stack|
 			Thread.start do
-				self.call(method_name) do |params|
+				self.send(method_name) do |params|
 					stack.push params
 					yield params if block_given?
 				end
