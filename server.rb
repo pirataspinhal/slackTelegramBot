@@ -33,7 +33,7 @@ class SlackWebhookListener
 		end
 	end
 
-	def listen_once(&block)
+	def listen_once
 
 		client = self.server.accept
 
@@ -46,12 +46,13 @@ class SlackWebhookListener
 
 		client.close
 
-		block.call(params)
+		#block.call(params)
+		yield params
 	end
 
 	def listen_loop(&block)
 		loop do
-			listen_once(block)
+			listen_once(&block)
 		end
 	end
 end

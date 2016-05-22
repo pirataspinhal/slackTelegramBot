@@ -13,17 +13,19 @@ end
 
 def telegram_cycle(bot)
 	bot.fetch_updates do |message|
+		case message
+		when Telegram::Bot::Client
+		end
 		puts "got message from #{message.from.username}: #{message.text}"
 		bot.api.send_message(chat_id: message.chat.id, text: "echo #{message.text}")
 	end
 end
 
 def slack_cycle(stack, bot)
-	unless stack.empty?
-		puts "got update from slack!"
-		params = stack.shift
-		bot.api.send_message(chat_id: CONST::Telegram::Chat, text: "#{params[:user_name]}: #{params[:text]}")
-	end
+	return if stack.empty?
+	puts "got update from slack!"
+	params = stack.shift
+	bot.api.send_message(chat_id: CONST::Telegram::Chat, text: "#{params[:user_name]}: #{params[:text]}")
 end
 
 def start(port = CONST::Slack::Port)
@@ -44,23 +46,5 @@ def start(port = CONST::Slack::Port)
 		slack_cycle stack, bot
 	end
 end
-
-=begin
-	puts "will get updates"
-	newbot.run do |bot|
-		#bot.listen do |message|
-		puts 'fetching first update'
-		bot.fetch_updates do |message|
-			puts "got message from #{message.from.username}: #{message.text}\n message:\n#{message.inspect}"
-			bot.api.send_message(chat_id: message.chat.id, text: "Olar")
-		end
-		puts 'fetching second update'
-		bot.fetch_updates do |message|
-			puts "extra one to clear out"
-			puts message.inspect
-		end
-	end
-	puts "after that"
-=end
 
 start
