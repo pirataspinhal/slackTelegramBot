@@ -17,7 +17,7 @@ class TelegramBot
 	end
 
 	def handle_slack_params(params)
-		bot.api.send_message(chat_id: message.chat.id, text: "#{params[:user_name]}:#{params[:text]}")
+		bot.api.send_message(chat_id: CONST::Telegram::Chat, text: "#{params[:user_name]}:#{params[:text]}")
 	end
 
 end
