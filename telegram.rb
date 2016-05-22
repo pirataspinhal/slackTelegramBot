@@ -51,6 +51,7 @@ class TelegramBot
 
 	def use_registry
 		reg = YAML.load_file(CONST::Telegram::Registry_File)
+		reg = {} unless reg
 		ret = yield reg
 		File.open(CONST::Telegram::Registry_File, 'w') { |f| f.puts reg.to_yaml }
 		ret
