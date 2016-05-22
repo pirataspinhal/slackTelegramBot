@@ -5,6 +5,7 @@ module CONST
 	module Telegram
 		Token = ENV['bot_token']
 		Chat = 41487359;
+		Registry_File = File.expand_path './registry.yml'
 	end
 	module Slack
 		Port = 25567
