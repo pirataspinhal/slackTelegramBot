@@ -30,7 +30,7 @@ class TelegramBot
 			reply message, text: "welcome"
 		when /\/configure/
 			slack = /\/configure (.+)/.match(message.text).captures
-			slack = slack.split(' ').first
+			slack = slack.first.split(' ').first
 			use_registry do |reg|
 				reg[slack] = message.chat.id
 			end
