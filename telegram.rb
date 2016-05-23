@@ -1,6 +1,7 @@
 require 'telegram/bot'
 require 'yaml'
 require 'date'
+require 'uri'
 
 class TelegramBot
 	attr_reader :bot
@@ -58,7 +59,7 @@ class TelegramBot
 			tok = params[:token]
 			if reg[tok]
 				reg[tok].each do |chat|
-					reply(nil, chat_id: chat, text: "got slack message in channel #{params[:channel_name]}\nat #{Time.at(params[:timestamp].to_i)}\n#{params[:user_name]}: #{params[:text].gsub('\+', ' ')}")
+					reply(nil, chat_id: chat, text: "got slack message in channel #{params[:channel_name]}\nat #{Time.at(params[:timestamp].to_i)}\n#{params[:user_name]}: #{URI.decode(params[:text])}")
 				end
 			else
 				puts "didnt find token #{tok.inspect}"
