@@ -32,10 +32,24 @@ class TelegramBot
 		when /\/configure/
 			slack = /\/configure (.+)/.match(message.text).captures
 			slack = slack.first.split(' ').first
-			use_registry do |reg|
-				reg[slack] = message.chat.id
+			if slack
+				use_registry do |reg|
+					reg[slack] = (reg[slack] || []) << message.chat.id
+				end
+				reply message, text: "Configured slack token '#{slack}' to be used in this chat"
+			else
+				reply message, text: "Usage: /configure <slack token>, for more information, use /help"
 			end
-			reply message, text: "Configured slack token '#{slack}' to be used in this chat"
+		when /\/clear/
+			deleted = true
+			text = "This chat does not have any assigned slack tokens, for more informations, use /help"
+			use_registry do |reg|
+				reg.each do |tok, chats|
+					chats.delete(message.chat.id) { deleted = false }
+					text = "Successfully removed '#{tok}' from this chat" if deleted
+				end
+			end
+			reply message, text: text
 		end
 	end
 
@@ -43,7 +57,9 @@ class TelegramBot
 		use_registry do |reg|
 			tok = params[:token]
 			if reg[tok]
-				reply(nil, chat_id: reg[tok], text: "got slack message in channel #{params[:channel_name]}\nat #{Time.at(params[:timestamp])}\n#{params[:user_name]}: #{params[:text]}")
+				reg[tok].each do |chat|
+					reply(nil, chat_id: reg[tok], text: "got slack message in channel #{params[:channel_name]}\nat #{Time.at(params[:timestamp])}\n#{params[:user_name]}: #{params[:text]}")
+				end
 			else
 				puts "didnt find token #{tok.inspect}"
 			end
