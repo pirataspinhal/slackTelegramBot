@@ -58,7 +58,7 @@ class TelegramBot
 			tok = params[:token]
 			if reg[tok]
 				reg[tok].each do |chat|
-					reply(nil, chat_id: reg[tok], text: "got slack message in channel #{params[:channel_name]}\nat #{Time.at(params[:timestamp])}\n#{params[:user_name]}: #{params[:text]}")
+					reply(nil, chat_id: chat, text: "got slack message in channel #{params[:channel_name]}\nat #{Time.at(params[:timestamp].to_i)}\n#{params[:user_name]}: #{params[:text].gsub('\+', ' ')}")
 				end
 			else
 				puts "didnt find token #{tok.inspect}"
