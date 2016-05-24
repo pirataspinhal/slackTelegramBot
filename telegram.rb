@@ -1,6 +1,7 @@
 require 'telegram/bot'
 require 'yaml'
 require 'date'
+require File.expand_path './text'
 require 'uri'
 
 class TelegramBot
@@ -29,7 +30,7 @@ class TelegramBot
 	def handle_message(message)
 		case message.text
 		when '/start'
-			reply message, text: "welcome"
+			reply message, text: Text["welcome"]
 		when /\/configure/
 			slack = /\/configure (.+)/.match(message.text).captures
 			slack = slack.first.split(' ').first
@@ -59,7 +60,7 @@ class TelegramBot
 			tok = params[:token]
 			if reg[tok]
 				reg[tok].each do |chat|
-					reply(nil, chat_id: chat, text: "got slack message in channel #{params[:channel_name]}\nat #{Time.at(params[:timestamp].to_i)}\n#{params[:user_name]}: #{URI.decode(params[:text])}")
+					reply(nil, chat_id: chat, text: "got slack message in channel #{params[:channel_name]}\nat #{Time.at(params[:timestamp].to_i)}\n#{params[:user_name]}: #{URI.decode(params[:text]).gsub('+', ' ')}")
 				end
 			else
 				puts "didnt find token #{tok.inspect}"
