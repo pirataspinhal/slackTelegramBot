@@ -15,7 +15,7 @@ end
 class Text
 	class << self
 		def [](text_name, placeholders = [])
-			text = YAML.load(ERB.new(File.read(filename)).result) || {}
+			text = YAML.load(ERB.new(File.read('texts.yml.erb')).result) || {}
 			text[text_name] % placeholders
 		end
 	end
