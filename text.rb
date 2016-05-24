@@ -15,7 +15,7 @@ end
 class Text
 	class << self
 		alias_method :[], :get
-		def get(text_name, placeholders = [])
+		def [](text_name, placeholders = [])
 			text = YAML.load(ERB.new(File.read(filename)).result) || {}
 			text[text_name] % placeholders
 		end
